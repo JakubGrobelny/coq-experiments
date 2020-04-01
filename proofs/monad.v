@@ -13,7 +13,6 @@ Class Monad (M : Type -> Type) : Type :=
 }.  
 
 Set Implicit Arguments.
-Print Implicit fmap.
 
 Instance applicative_functor (F : Type -> Type) `{Applicative F} : Functor F :=
 {  fmap _ _ x f := ap _ _ (pure _ f) x
@@ -28,3 +27,34 @@ Instance monad_functor (M : Type -> Type) `{Monad M} : Functor M :=
 { fmap _ _ x f := bind _ _ x (fun x => mreturn _ (f x))
 }.
 
+Inductive maybe (A : Type) :=
+| Nothing
+| Just : A -> maybe A.
+
+Arguments Nothing [A].
+Arguments Just [A].
+
+Instance maybe_functor : Functor maybe.
+Proof.
+    constructor.
+    intros.
+    constructor.
+Qed.
+
+Instance maybe_applicative : Applicative maybe.
+Proof.
+    constructor.
+    intros.
+    constructor.
+    intros.
+    constructor.
+Qed.
+
+Instance maybe_monad : Monad maybe.
+Proof.
+    constructor.
+    intros.
+    constructor.
+    intros.
+    constructor.
+Qed.
