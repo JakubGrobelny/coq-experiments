@@ -118,7 +118,7 @@ end.
 
 Arguments reverse_aux [A].
 
-Fixpoint reverse (A : Type) (xs : list A) : list A := 
+Definition reverse (A : Type) (xs : list A) : list A := 
     reverse_aux xs Null.
 
 Arguments reverse [A].
@@ -177,3 +177,168 @@ Proof.
       rewrite IHxs.
       reflexivity.
 Qed.
+  
+Theorem append_singleton : forall (A : Type) (a : A) (xs : list A),
+    append (singleton a) xs = Cons a xs.
+Proof.
+    intros A a xs.
+    simpl.
+    reflexivity.
+Qed.
+
+Theorem reverse_singleton : 
+    forall (A : Type) (a : A), app_reverse (singleton a) = singleton a.
+Proof.
+    intros A a.
+    simpl.
+    reflexivity.
+Qed.
+
+Theorem double_reverse_app : forall (A : Type) (xs : list A),
+    app_reverse (app_reverse xs) = xs.
+Proof.
+    intros A.
+    induction xs.
+    + simpl.
+      reflexivity.
+    + replace (app_reverse (Cons a xs))
+        with (append (app_reverse xs) (app_reverse (singleton a)))
+        by auto.
+      rewrite reverse_append.
+      simpl app_reverse.
+      rewrite append_singleton.
+      rewrite IHxs.
+      reflexivity.
+Qed.
+
+Theorem eq_sym : forall (a b : Prop), a = b -> b = a.
+Proof.  
+    intros.
+    symmetry.
+    assumption.
+Qed.
+
+Theorem append_length' : forall (A : Type) (xs ys : list A),
+    length (append xs ys) = length xs + length ys.
+Proof.
+    symmetry.
+    rewrite append_length.
+    reflexivity.
+Qed.
+    
+Theorem append_singleton_length : forall (A : Type) (a : A) (xs : list A),
+    length (append xs (singleton a)) = length xs + 1.
+Proof.
+    intros A a xs.
+    rewrite append_length'.
+    unfold singleton.
+    simpl length.
+    reflexivity.
+Qed. 
+
+Theorem addition_zero_neutral : forall (a : nat), a + 0 = a.
+Proof.
+    induction a.
+    + simpl plus.
+      reflexivity.
+    + simpl plus.
+      rewrite IHa.
+      reflexivity.
+Qed.
+
+Theorem addition_assoc : forall (a b : nat), a + b = b + a.
+Proof.
+    intros a.
+    induction b.
+    + simpl plus.
+      rewrite addition_zero_neutral.
+      reflexivity.
+    + simpl plus.
+      replace (a + S b) with (S (a + b)) by auto.
+      rewrite IHb.
+      reflexivity.
+Qed.
+      
+
+Theorem reverse_preserves_length : forall (A : Type) (xs : list A),
+    length (app_reverse xs) = length xs.
+Proof.
+    intros A.
+    induction xs.
+    + simpl app_reverse.
+      reflexivity.
+    + simpl app_reverse.
+      rewrite append_singleton_length.
+      simpl length.
+      rewrite addition_assoc.
+      rewrite IHxs.
+      reflexivity.
+Qed.    
+
+Theorem rev_acc_step : forall (A : Type) (xs acc : list A) (a : A),
+    reverse_aux (Cons a xs) acc = reverse_aux xs (Cons a acc).
+Proof.
+    intros A xs acc a.
+    simpl reverse_aux.
+    reflexivity.
+Qed.
+
+Theorem rev_acc_step_back : forall (A : Type) (xs acc : list A) (a : A),
+    reverse_aux xs (Cons a acc) = reverse_aux (Cons a xs) acc.
+Proof.
+    symmetry.
+    rewrite rev_acc_step.
+    reflexivity.
+Qed.
+
+(* Theorem reverse_step : forall (A : Type) (x : A) (xs : list A),
+    reverse_aux xs (Cons x Null) = append (reverse_aux xs Null) (Cons x Null).
+Proof.
+    intros A x.
+    induction xs.
+    + simpl.
+      reflexivity.
+    + repalce (append )  
+       *)
+
+
+(* Theorem reverse_eqv : 
+    forall (A : Type) (xs : list A), reverse_aux xs Null = app_reverse xs.
+Proof.
+    intros A.
+    induction xs.
+    + simpl. reflexivity.
+    + simpl app_reverse.
+      simpl reverse_aux. *)
+
+
+
+(* Theorem reveres_aux_cons : forall (A : Type) (x : A) (xs acc : list A),
+    Cons x (reverse_aux xs acc) = reverse_aux xs (Cons x acc).
+Proof.
+    intros A x.
+    induction xs.
+    + simpl. reflexivity.
+    + simpl.
+      intros acc.
+ *)
+
+    
+(* Theorem reverse_cons : forall (A : Type) (x : A) (xs : list A), 
+    reverse (Cons x xs) = append xs (singleton x).
+Proof.
+    intros A x.
+    induction xs.
+        + simpl (append Null (singleton x)).
+          unfold singleton.
+          simpl (reverse (Cons x Null)).
+          reflexivity.
+        + simpl append.
+          replace (append xs (singleton x)) 
+            with (reverse (Cons x xs)) 
+            by auto.
+          simpl reverse.
+          induction xs.
+          simpl reverse_aux.
+          reflexivity.
+ *)
